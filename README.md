@@ -10,7 +10,7 @@ Obsidian's distribution channels carry three files per plugin: `main.js`, `manif
 
 ## Status
 
-Pre-release scaffold. The public API remains under design, and no runtime surface ships yet.
+Pre-release. The typed error surface ships: `PluginAssetsError` as the shared base, plus `NetworkFetchError`, `AttestationFailedError`, `CacheCorruptError`, and `AssetNotFoundError`. The fetch, verify, and cache runtime lands in later betas.
 
 ## Development
 
