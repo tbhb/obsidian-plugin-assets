@@ -91,11 +91,15 @@ jobs:
             dist/index.js
             dist/index.d.ts
 
-      # Auth goes through npm's OIDC trusted publishing flow: no NPM_TOKEN
-      # secret involved. The registry exchanges the GitHub Actions OIDC token
-      # for a short-lived publish credential, and `--provenance` records the
-      # same identity on the package. Configure the trusted publisher in the
-      # npm UI first (repo + workflow file + branch/environment).
+      # npm trusted publishing requires npm >= 11.5.1. Node 22.22.0 ships with
+      # npm 10.9.2, so we upgrade the CLI here before publishing. Auth goes
+      # through npm's OIDC flow: no NPM_TOKEN involved, no registry-url setup
+      # needed — npm exchanges the GitHub Actions OIDC token for a short-lived
+      # publish credential, and `--provenance` records that same identity on
+      # the package.
+      - name: Upgrade npm for trusted publishing
+        run: npm install --global npm@latest
+
       - name: Publish to npm
         run: |
           set -euo pipefail
@@ -104,7 +108,7 @@ jobs:
           # stable release. release-please emits tags without a `v` prefix.
           tag='${{ needs.release-please.outputs.tag_name }}'
           if [[ "$tag" == *-beta* ]]; then
-            pnpm publish --no-git-checks --provenance --tag beta
+            npm publish --provenance --access public --tag beta
           else
-            pnpm publish --no-git-checks --provenance
+            npm publish --provenance --access public
           fi
