@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.0-beta.4](https://github.com/tbhb/obsidian-plugin-assets/compare/0.1.0-beta.3...0.1.0-beta.4) (2026-04-23)
+
+
+### Miscellaneous Chores
+
+* validate release bot + prerelease config ([a73a821](https://github.com/tbhb/obsidian-plugin-assets/commit/a73a821934a4b2e2d27a4b545a27dda4812bccdd))
+
 ## [0.1.0-beta.3](https://github.com/tbhb/obsidian-plugin-assets/compare/0.1.0-beta.2...0.1.0-beta.3) (2026-04-23)
 
 
