@@ -1,0 +1,23 @@
+{
+  "$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json",
+  "version": "0.2",
+  "language": "en",
+  "ignorePaths": [
+    "**/*.d.ts",
+    "**/*.log",
+    ".vale/**/*",
+    "coverage/**/*",
+    "dist/**/*",
+    "node_modules/**/*",
+    "pnpm-lock.yaml",
+    "CHANGELOG.md"
+  ],
+  "dictionaryDefinitions": [
+    {
+      "name": "obsidian-plugin-assets",
+      "path": "./cspell-words.txt",
+      "addWords": true
+    }
+  ],
+  "dictionaries": ["obsidian-plugin-assets"]
+}
