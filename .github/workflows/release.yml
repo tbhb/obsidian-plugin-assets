@@ -46,6 +46,13 @@ jobs:
     needs: release-please
     if: ${{ needs.release-please.outputs.release_created == 'true' }}
     runs-on: ubuntu-latest
+    # Bind to the `npm` GitHub environment so the OIDC token carries an
+    # `environment` claim. The npm trusted publisher config pins that claim,
+    # so only runs of this job from this environment can publish. Both `main`
+    # and `beta` pushes share the same environment.
+    environment:
+      name: npm
+      url: https://www.npmjs.com/package/obsidian-plugin-assets
     # Override workflow-level permissions for least privilege. This job needs:
     #   - contents: write  →  to upload assets to the GitHub release
     #   - id-token: write  →  to request the OIDC token for sigstore keyless
