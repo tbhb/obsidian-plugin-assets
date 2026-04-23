@@ -11,7 +11,7 @@ Push conventional commits to `main`. release-please opens a release PR that bump
 ### Stable vs beta
 
 - **Stable release.** Normal `feat` or `fix` bumps under `bump-minor-pre-major: true` and `bump-patch-for-minor-pre-major: true`. Published to npm under the default `latest` dist-tag. The GitHub release stays unmarked.
-- **Beta release.** Version carries a prerelease qualifier such as `0.1.0-beta.2`. Trigger via a `Release-As: 0.1.0-beta.2` footer on any qualifying commit. release-please flags the GitHub release as `prerelease: true` automatically. The publish job detects the `-` in the tag and passes `--tag beta` to `npm publish`, so `npm install` keeps resolving to the highest stable version.
+- **Beta release.** Version carries a prerelease qualifier such as `0.1.0-beta.2`. Trigger via a `Release-As: 0.1.0-beta.2` footer on any qualifying commit. The package config sets `"prerelease": true`, so release-please flags the GitHub release as `prerelease: true` whenever the version carries a prerelease qualifier. Stable versions stay unflagged. The publish job detects the `-` in the tag and passes `--tag beta` to `npm publish`, so `npm install` keeps resolving to the highest stable version.
 
 BRAT honors GitHub's `prerelease` flag for beta testers, which covers the user-visible staging channel without a separate branch.
 
@@ -21,11 +21,11 @@ Only `feat:`, `fix:`, and commits marked with a breaking change open a release P
 
 ## Authentication
 
-Publishing uses [npm trusted publishing][npm-trusted]. The registry exchanges the GitHub Actions OIDC token for a short-lived publish credential, and `--provenance` records the same identity on the package. The `publish-release` job requests `id-token: write` so sigstore can sign the build attestation and so npm can verify the OIDC token. No `NPM_TOKEN` secret exists.
+Publishing uses [npm trusted publishing][npm-trusted]. The registry exchanges the GitHub Actions OIDC token for a short-lived publish credential, and `--provenance` records the same identity on the package. Requesting `id-token: write` on the `publish-release` job lets sigstore sign the build attestation and lets npm verify the OIDC token. No `NPM_TOKEN` secret exists.
 
 [npm-trusted]: https://docs.npmjs.com/trusted-publishers
 
-Actions supplies `GITHUB_TOKEN` automatically. No manual setup.
+The `release-please` job runs under a token minted from the `tbhb-releases` GitHub App. The workflow reads `RELEASE_BOT_APP_ID` as a repo variable and `RELEASE_BOT_PRIVATE_KEY` as a repo secret. An App-issued token bypasses GitHub's recursion-prevention rule so the release PR push triggers CI. It also bypasses the first-time-contributor workflow-approval gate. Downstream jobs use the built-in `GITHUB_TOKEN` and the OIDC token. No other setup needed.
 
 ## Why npm, not pnpm, runs the publish step
 

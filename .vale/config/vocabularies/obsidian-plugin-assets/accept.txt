@@ -53,6 +53,7 @@ toolchain
 tsc
 [Tt]sconfigs?
 [Tt]ypecheck
+unflagged
 Vite
 Vitest
 walkthrough
