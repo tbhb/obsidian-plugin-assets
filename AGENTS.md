@@ -10,7 +10,7 @@ Run these commands on a fresh clone:
 pnpm install          # install dependencies + init husky hooks
 pnpm typecheck        # tsc --noEmit on src + test configs
 pnpm test             # vitest, 100% coverage gate
-pnpm build            # typecheck + vite build to dist/
+pnpm build            # vite build, emits dist/ with rolled-up types
 ```
 
 Run the full gate before pushing:
@@ -47,7 +47,7 @@ Config lives at the repo root: `biome.json`, `eslint.config.mts`, `cspell.json` 
 
 ```bash
 pnpm dev              # vite build --watch
-pnpm build            # tsc --noEmit + vite build (emits dist/)
+pnpm build            # vite build, emits dist/ with rolled-up types
 pnpm test             # vitest run
 pnpm test:watch       # vitest in watch mode
 pnpm test:coverage    # vitest run --coverage, enforces 100% thresholds

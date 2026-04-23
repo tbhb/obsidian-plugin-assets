@@ -9,6 +9,7 @@ dependabot
 gitignored
 husky
 jsdom
+libnpmpublish
 nanostaged
 OIDC
 parenthetical

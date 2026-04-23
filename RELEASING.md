@@ -1,6 +1,6 @@
 # Releasing
 
-[release-please][release-please] drives the release pipeline across two channels, stable and beta. Both channels publish to npm with sigstore provenance via `actions/attest-build-provenance` and `pnpm publish --provenance`.
+[release-please][release-please] drives the release pipeline across two channels, stable and beta. Both channels publish to npm with sigstore provenance via `actions/attest-build-provenance` and `npm publish --provenance`.
 
 [release-please]: https://github.com/googleapis/release-please-action
 
@@ -23,6 +23,10 @@ Actions supplies `GITHUB_TOKEN` automatically. No manual setup.
 
 One-time repository and npm configuration lives in the design sketch at `obsidian-plugin-assets.md` in the sandbox vault.
 
+## Why npm, not pnpm, runs the publish step
+
+The pipeline uses pnpm for install, lint, typecheck, test, and build. Only the final publish step shells out to `npm`. The reason: npm trusted publishing needs a registry OIDC handshake that landed in npm 11.5.1. Node 22 ships with npm 10.9.2, and the `libnpmpublish` version bundled in current pnpm releases inherits the same gap, so `pnpm publish --provenance` signs the provenance statement but fails the registry upload with a 404. A global `npm install --global npm@latest` runs before `npm publish --provenance` to pull in the supported command-line tool. Don't swap the publish step back to `pnpm publish` until pnpm ships a fix. Treat a green sigstore log line as separate from a green registry response.
+
 ## Manual verification after a release
 
 ```bash
@@ -36,9 +40,7 @@ The `provenance` field should match the Actions run that published the tag.
 
 release-please owns the following files. Don't edit them by hand and don't create tags manually.
 
-- `manifest.json` `version` field
 - `package.json` `version` field
-- `versions.json`
 - `CHANGELOG.md`
 - `.github/release-please-manifest.json`
 - Git tags

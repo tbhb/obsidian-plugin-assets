@@ -48,7 +48,7 @@
   "scripts": {
     "prepare": "husky",
     "dev": "vite build --watch",
-    "build": "tsc --noEmit && vite build",
+    "build": "vite build",
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
     "test": "vitest run",
     "test:watch": "vitest",
