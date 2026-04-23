@@ -21,22 +21,17 @@ pnpm lint:all && pnpm typecheck && pnpm build && pnpm test:coverage
 
 The pre-commit hook runs `nano-staged`. The pre-push hook runs typecheck and tests. Never bypass with `--no-verify`.
 
-## Design source
-
-The authoritative design sketch lives in the sandbox vault at `obsidian-plugin-assets.md`. Consult it for the target API shape, trust model, and caching strategy before adding any runtime surface. Update the sketch if the design shifts in code.
-
 ## Repository layout
 
 ```text
 src/
-└── index.ts                # public exports (stub only until design lands)
+└── index.ts                # public exports
 test/
 └── index.test.ts           # one test file per coverage-tracked source module
 .github/
 ├── workflows/ci.yml        # Lint, Build, Test, Documentation jobs
 ├── workflows/release.yml   # release-please + build + attest + npm publish
 ├── release-please-config.json
-├── release-please-config.beta.json
 ├── release-please-manifest.json
 └── dependabot.yml
 ```
@@ -105,10 +100,10 @@ Add new technical terms to `cspell-words.txt` and to `.vale/config/vocabularies/
 
 ## Release process
 
-- release-please handles versioning, tagging, and release creation. Configs live under `.github/`. See `RELEASING.md` for the full guide.
-- Stable channel: push conventional commits to `main`. release-please opens a release PR that bumps `package.json` and updates `CHANGELOG.md`. Merging creates a bare-semver tag like `1.2.0`, with no `v` prefix, and a GitHub release. A follow-up job builds, attests via SLSA provenance, and publishes to npm with `--provenance`.
-- Beta channel: push to the `beta` branch. Same flow, but driven by `.github/release-please-config.beta.json`. Produces `1.2.0-beta.1`-style tags marked as pre-releases; the publish step tags them `beta` on npm so stable consumers keep resolving to the latest stable.
-- Only `feat:`, `fix:`, and commits with breaking changes trigger a release PR. `chore:`, `docs:`, `refactor:`, `style:`, `test:`, `ci:`, and `build:` commits land without opening one.
+- release-please runs in single-branch mode on `main`. See `RELEASING.md` for the full guide.
+- Push conventional commits to `main`. release-please opens a release PR that bumps `package.json` and updates `CHANGELOG.md`. Merging creates a bare-semver tag and a GitHub release. A follow-up job builds, attests via SLSA provenance, and publishes to npm with `--provenance`.
+- Stable vs beta comes from the version string, not the branch. A regular `feat`/`fix` bumps under `bump-minor-pre-major` and publishes under `latest`. A `Release-As: x.y.z-beta.N` footer on any commit forces a prerelease; release-please flags the GitHub release as prerelease and the publish step passes `--tag beta` to `npm publish`.
+- Only `feat:`, `fix:`, and commits with breaking changes trigger a release PR on their own. `chore:`, `docs:`, `refactor:`, `style:`, `test:`, `ci:`, and `build:` commits land without opening one, unless they carry a `Release-As:` footer.
 - Don't hand-edit `package.json` `version` or `CHANGELOG.md`. Don't create tags manually. release-please owns those files.
 
 ## Rules at a glance
@@ -118,7 +113,7 @@ Add new technical terms to `cspell-words.txt` and to `.vale/config/vocabularies/
 - Write reference-style markdown links with definitions at the bottom of the paragraph.
 - Avoid em-dashes, passive voice, and italicized copulas in prose.
 - Keep paragraphs on one line. No hard wrap.
-- Don't force-push to `main` or `beta`.
+- Don't force-push to `main`.
 - Don't bypass hooks.
 - Don't hand-edit release-managed files.
 

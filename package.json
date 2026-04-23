@@ -1,6 +1,6 @@
 {
   "name": "obsidian-plugin-assets",
-  "version": "0.0.0",
+  "version": "0.1.0-beta.2",
   "description": "Verified fetch, cache, and resolve layer for Obsidian plugins that ship release-sourced assets.",
   "keywords": [
     "obsidian",
@@ -78,7 +78,7 @@
     ],
     "*.md": [
       "rumdl check --fix",
-      "vale"
+      "vale --glob='!CHANGELOG.md'"
     ],
     "*.{yml,yaml}": "yamllint --strict",
     ".github/workflows/*.{yml,yaml}": "actionlint",
