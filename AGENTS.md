@@ -8,7 +8,7 @@ Run these commands on a fresh clone:
 
 ```bash
 pnpm install          # install dependencies + init husky hooks
-pnpm typecheck        # tsc --noEmit on src + test configs
+pnpm typecheck        # tsc --noEmit on src + test
 pnpm test             # vitest, 100% coverage gate
 pnpm build            # vite build, emits dist/ with rolled-up types
 ```
@@ -36,7 +36,7 @@ test/
 └── dependabot.yml
 ```
 
-Config lives at the repo root: `biome.json`, `eslint.config.mts`, `.dependency-cruiser.cjs`, `.jscpd.json`, `.knip.json`, `cspell.json` + `cspell-words.txt`, `.rumdl.toml`, `.vale.ini` + `.vale/`, `.yamllint.yaml` + `.yamllintignore`, `commitlint.config.js`, `vite.config.ts`, `vitest.config.ts`, plus both `tsconfig.json` and `tsconfig.test.json`.
+Config lives at the repo root: `biome.json`, `eslint.config.mts`, `.dependency-cruiser.cjs`, `.jscpd.json`, `.knip.json`, `cspell.json` + `cspell-words.txt`, `.rumdl.toml`, `.vale.ini` + `.vale/`, `.yamllint.yaml` + `.yamllintignore`, `commitlint.config.js`, `vite.config.ts`, `vitest.config.ts`, and `tsconfig.json`.
 
 ## Commands reference
 
@@ -46,7 +46,7 @@ pnpm build            # vite build, emits dist/ with rolled-up types
 pnpm test             # vitest run
 pnpm test:watch       # vitest in watch mode
 pnpm test:coverage    # vitest run --coverage, enforces 100% thresholds
-pnpm typecheck        # tsc on src and test tsconfigs
+pnpm typecheck        # tsc --noEmit on src + test
 pnpm format           # biome format --write
 pnpm format:markdown  # rumdl fmt .
 pnpm lint             # biome lint + eslint
@@ -66,7 +66,7 @@ pnpm vale:sync        # download vale style packages
 ## Code style
 
 - Two-space indentation everywhere, enforced by Biome. Single quotes, semicolons, trailing commas, 100-char line width. See `biome.json`.
-- ESLint runs `typescript-eslint`'s type-aware rules over `src/**/*.ts` for checks Biome doesn't cover.
+- ESLint runs on `src/**/*.ts` and `test/**/*.ts`, with `typescript-eslint`'s type-aware rules applied to both for checks Biome doesn't cover.
 - `eslint-plugin-sonarjs` contributes `sonarjs/cognitive-complexity` at the default threshold of 15. Prefer extracting helper functions over raising the threshold.
 - [dependency-cruiser][depcruise] guards the module graph via `.dependency-cruiser.cjs`. It forbids runtime circular dependencies, orphan modules, unresolvable imports, dev-dependency imports from `src/`, duplicate dependency-type declarations, and `src/` depending on `test/`. Cycles composed only of `import type` edges pass, since those edges vanish after tsc emits.
 - [Knip][knip] catches unused files, exports, and dependencies via `.knip.json`. Its Vite and Vitest plugins auto-discover entries from `vite.config.ts` and `vitest.config.ts`, so the config only declares the project glob plus a small `ignoreBinaries` list for external tools that npm scripts call: `actionlint`, `rumdl`, `vale`, and `yamllint`.

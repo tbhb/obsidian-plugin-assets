@@ -20,15 +20,28 @@
     "rules": {
       "recommended": true,
       "style": {
-        "useImportType": "warn",
-        "noParameterAssign": "error"
+        "useImportType": "error",
+        "noParameterAssign": "error",
+        "noNonNullAssertion": "error"
       },
       "suspicious": {
-        "noExplicitAny": "warn"
+        "noExplicitAny": "error",
+        "noTsIgnore": "error",
+        "noImportCycles": "error"
       },
       "correctness": {
-        "noUnusedVariables": "warn",
-        "noUnusedFunctionParameters": "off"
+        "noUnusedVariables": "error",
+        "noUnusedFunctionParameters": "error",
+        "noUnresolvedImports": "error"
+      },
+      "complexity": {
+        "useLiteralKeys": "off"
+      },
+      "nursery": {
+        "noFloatingPromises": "error",
+        "noMisusedPromises": "error",
+        "useAwaitThenable": "error",
+        "noUnnecessaryConditions": "error"
       }
     }
   },
@@ -48,5 +61,21 @@
         "organizeImports": "on"
       }
     }
-  }
+  },
+  "overrides": [
+    {
+      "includes": ["test/__mocks__/**"],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noUnusedVariables": "off"
+          },
+          "suspicious": {
+            "noExplicitAny": "off",
+            "noConfusingVoidType": "off"
+          }
+        }
+      }
+    }
+  ]
 }
