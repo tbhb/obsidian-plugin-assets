@@ -48,7 +48,42 @@ export default tseslint.config(
       },
       parserOptions: {
         projectService: {
-          allowDefaultProject: ['eslint.config.mts'],
+          allowDefaultProject: [
+            'eslint.config.mts',
+            'vite.config.ts',
+            'vitest.config.ts',
+            'commitlint.config.js',
+          ],
+        },
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+    plugins: {
+      '@typescript-eslint': tseslint.plugin,
+      sonarjs,
+    },
+    rules: {
+      'sonarjs/cognitive-complexity': ['error', 15],
+      ...typeAwareRules,
+    },
+  },
+  // Root-level config files. These aren't in tsconfig.json's `include`, so
+  // they fall through `allowDefaultProject` above. They run in Node.
+  {
+    files: ['vite.config.ts', 'vitest.config.ts', 'commitlint.config.js'],
+    languageOptions: {
+      parser: tseslint.parser,
+      globals: {
+        ...globals.node,
+      },
+      parserOptions: {
+        projectService: {
+          allowDefaultProject: [
+            'eslint.config.mts',
+            'vite.config.ts',
+            'vitest.config.ts',
+            'commitlint.config.js',
+          ],
         },
         tsconfigRootDir: import.meta.dirname,
       },
@@ -96,13 +131,5 @@ export default tseslint.config(
       '@typescript-eslint/no-unsafe-argument': 'off',
     },
   },
-  globalIgnores([
-    'node_modules',
-    'dist',
-    'coverage',
-    'vite.config.ts',
-    'vitest.config.ts',
-    'commitlint.config.js',
-    '.husky',
-  ]),
+  globalIgnores(['node_modules', 'dist', 'coverage', '.husky']),
 );
