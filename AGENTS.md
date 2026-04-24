@@ -36,7 +36,7 @@ test/
 └── dependabot.yml
 ```
 
-Config lives at the repo root: `biome.json`, `eslint.config.mts`, `cspell.json` + `cspell-words.txt`, `.rumdl.toml`, `.vale.ini` + `.vale/`, `.yamllint.yaml` + `.yamllintignore`, `commitlint.config.js`, `vite.config.ts`, `vitest.config.ts`, plus both `tsconfig.json` and `tsconfig.test.json`.
+Config lives at the repo root: `biome.json`, `eslint.config.mts`, `.dependency-cruiser.cjs`, `cspell.json` + `cspell-words.txt`, `.rumdl.toml`, `.vale.ini` + `.vale/`, `.yamllint.yaml` + `.yamllintignore`, `commitlint.config.js`, `vite.config.ts`, `vitest.config.ts`, plus both `tsconfig.json` and `tsconfig.test.json`.
 
 ## Commands reference
 
@@ -50,12 +50,14 @@ pnpm typecheck        # tsc on src and test tsconfigs
 pnpm format           # biome format --write
 pnpm format:markdown  # rumdl fmt .
 pnpm lint             # biome lint + eslint
+pnpm lint:deps        # dependency-cruiser on src + test
 pnpm lint:markdown    # rumdl check
 pnpm lint:prose       # vale
 pnpm lint:spelling    # cspell
 pnpm lint:yaml        # yamllint --strict
 pnpm lint:actions     # actionlint
 pnpm lint:all         # every lint above, one command
+pnpm depcruise:graph  # mermaid module graph -> dependency-graph.mmd
 pnpm vale:sync        # download vale style packages
 ```
 
@@ -64,8 +66,11 @@ pnpm vale:sync        # download vale style packages
 - Two-space indentation everywhere, enforced by Biome. Single quotes, semicolons, trailing commas, 100-char line width. See `biome.json`.
 - ESLint runs `typescript-eslint`'s type-aware rules over `src/**/*.ts` for checks Biome doesn't cover.
 - `eslint-plugin-sonarjs` contributes `sonarjs/cognitive-complexity` at the default threshold of 15. Prefer extracting helper functions over raising the threshold.
+- [dependency-cruiser][depcruise] guards the module graph via `.dependency-cruiser.cjs`. It forbids runtime circular dependencies, orphan modules, unresolvable imports, dev-dependency imports from `src/`, duplicate dependency-type declarations, and `src/` depending on `test/`. Cycles composed only of `import type` edges pass, since those edges vanish after tsc emits.
 - Strict TypeScript with ES2022 target, `noUncheckedIndexedAccess`, and `isolatedModules`.
 - Avoid default exports.
+
+[depcruise]: https://github.com/sverweij/dependency-cruiser
 
 ## Build shape
 

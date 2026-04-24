@@ -1,3 +1,4 @@
+archi
 attestation
 attestations
 autoupdate
@@ -5,7 +6,9 @@ biomejs
 commitlint
 cooldown
 Cowork
+depcruise
 dependabot
+dependency-cruiser
 gitignored
 husky
 jsdom
