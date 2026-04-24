@@ -67,6 +67,7 @@ setText
 shellcheck
 sigstore
 SLSA
+Stryker
 subcommand
 subtree
 tbhb
