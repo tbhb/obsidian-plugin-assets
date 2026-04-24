@@ -12,6 +12,7 @@ dependency-cruiser
 gitignored
 husky
 jsdom
+knip
 libnpmpublish
 nanostaged
 OIDC

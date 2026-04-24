@@ -19,7 +19,7 @@ Run the full gate before pushing:
 pnpm lint:all && pnpm typecheck && pnpm build && pnpm test:coverage
 ```
 
-The pre-commit hook runs `nano-staged`. The pre-push hook runs typecheck and tests. Never bypass with `--no-verify`.
+The pre-commit hook runs `nano-staged`. The pre-push hook runs typecheck, knip, and tests. Never bypass with `--no-verify`.
 
 ## Repository layout
 
@@ -36,7 +36,7 @@ test/
 └── dependabot.yml
 ```
 
-Config lives at the repo root: `biome.json`, `eslint.config.mts`, `.dependency-cruiser.cjs`, `cspell.json` + `cspell-words.txt`, `.rumdl.toml`, `.vale.ini` + `.vale/`, `.yamllint.yaml` + `.yamllintignore`, `commitlint.config.js`, `vite.config.ts`, `vitest.config.ts`, plus both `tsconfig.json` and `tsconfig.test.json`.
+Config lives at the repo root: `biome.json`, `eslint.config.mts`, `.dependency-cruiser.cjs`, `.knip.json`, `cspell.json` + `cspell-words.txt`, `.rumdl.toml`, `.vale.ini` + `.vale/`, `.yamllint.yaml` + `.yamllintignore`, `commitlint.config.js`, `vite.config.ts`, `vitest.config.ts`, plus both `tsconfig.json` and `tsconfig.test.json`.
 
 ## Commands reference
 
@@ -51,6 +51,7 @@ pnpm format           # biome format --write
 pnpm format:markdown  # rumdl fmt .
 pnpm lint             # biome lint + eslint
 pnpm lint:deps        # dependency-cruiser on src + test
+pnpm lint:knip        # knip — unused files, exports, deps
 pnpm lint:markdown    # rumdl check
 pnpm lint:prose       # vale
 pnpm lint:spelling    # cspell
@@ -67,10 +68,12 @@ pnpm vale:sync        # download vale style packages
 - ESLint runs `typescript-eslint`'s type-aware rules over `src/**/*.ts` for checks Biome doesn't cover.
 - `eslint-plugin-sonarjs` contributes `sonarjs/cognitive-complexity` at the default threshold of 15. Prefer extracting helper functions over raising the threshold.
 - [dependency-cruiser][depcruise] guards the module graph via `.dependency-cruiser.cjs`. It forbids runtime circular dependencies, orphan modules, unresolvable imports, dev-dependency imports from `src/`, duplicate dependency-type declarations, and `src/` depending on `test/`. Cycles composed only of `import type` edges pass, since those edges vanish after tsc emits.
+- [Knip][knip] catches unused files, exports, and dependencies via `.knip.json`. Its Vite and Vitest plugins auto-discover entries from `vite.config.ts` and `vitest.config.ts`, so the config only declares the project glob plus a small `ignoreBinaries` list for external tools that npm scripts call: `actionlint`, `rumdl`, `vale`, and `yamllint`.
 - Strict TypeScript with ES2022 target, `noUncheckedIndexedAccess`, and `isolatedModules`.
 - Avoid default exports.
 
 [depcruise]: https://github.com/sverweij/dependency-cruiser
+[knip]: https://knip.dev/
 
 ## Build shape
 
@@ -100,7 +103,7 @@ Add new technical terms to `cspell-words.txt` and to `.vale/config/vocabularies/
 - husky hooks, installed automatically by `pnpm install`:
   - `pre-commit` runs `nano-staged` across the staged files
   - `commit-msg` runs commitlint
-  - `pre-push` runs `pnpm typecheck && pnpm test`
+  - `pre-push` runs `pnpm typecheck && pnpm lint:knip && pnpm test`
 - Never use `--no-verify`. Fix the underlying failure.
 - Work on a feature branch, open a PR, and merge via squash.
 

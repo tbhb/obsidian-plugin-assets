@@ -22,6 +22,7 @@ etag
 formatters
 gitignore[dr]?
 [Hh]usky
+[Kk]nip
 MIT
 monospace
 match(?:er|ers|ing)
