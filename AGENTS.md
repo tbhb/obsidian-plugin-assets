@@ -30,13 +30,16 @@ test/
 └── index.test.ts           # one test file per coverage-tracked source module
 .github/
 ├── workflows/ci.yml        # Lint, Build, Test, Documentation jobs
+├── workflows/mutation.yml  # Stryker mutation tests with incremental cache
 ├── workflows/release.yml   # release-please + build + attest + npm publish
 ├── release-please-config.json
 ├── release-please-manifest.json
 └── dependabot.yml
+scripts/
+└── stryker-changed.mjs     # diff-scoped mutation run for local and agent use
 ```
 
-Config lives at the repo root: `biome.json`, `eslint.config.mts`, `.dependency-cruiser.cjs`, `.jscpd.json`, `.knip.json`, `.cspell.json` + `cspell-words.txt`, `.rumdl.toml`, `.vale.ini` + `.vale/`, `.yamllint.yaml` + `.yamllintignore`, `.commitlintrc.ts`, `vite.config.ts`, `vitest.config.ts`, and `tsconfig.json`.
+Config lives at the repo root: `biome.json`, `eslint.config.mts`, `.dependency-cruiser.cjs`, `.jscpd.json`, `.knip.json`, `.cspell.json` + `cspell-words.txt`, `.rumdl.toml`, `.vale.ini` + `.vale/`, `.yamllint.yaml` + `.yamllintignore`, `.commitlintrc.ts`, `stryker.config.json`, `vite.config.ts`, `vitest.config.ts`, `vitest.stryker.config.ts`, and `tsconfig.json`.
 
 ## Commands reference
 
@@ -49,6 +52,8 @@ pnpm test:unit        # vitest run --project=unit
 pnpm test:integration # vitest run --project=integration
 pnpm test:property    # vitest run --project=property
 pnpm test:coverage    # vitest run --coverage, enforces 100% thresholds
+pnpm test:mutation    # stryker run, full mutation pass with incremental reuse
+pnpm test:mutation:changed # stryker scoped to src diff vs STRYKER_BASE (default origin/main)
 pnpm typecheck        # tsc --noEmit on src + test
 pnpm format           # biome format --write
 pnpm format:markdown  # rumdl fmt .
@@ -94,6 +99,21 @@ The library ships as an ECMAScript module, no CommonJS fallback. `vite build` em
 
 [fast-check]: https://fast-check.dev/
 [fast-check-vitest]: https://github.com/dubzzz/fast-check/tree/main/packages/vitest
+
+## Mutation testing
+
+[Stryker 9][stryker] gates every module in `src/` at 100% mutation score. Coverage proves a line ran. Mutation testing proves a test would fail if that line changed. Treat survivors the way you'd treat coverage gaps. Fix the tests, or restructure the source so the survivor moves into a pure function whose output a test can pin by equality.
+
+- The Vitest runner reads `vitest.stryker.config.ts`, which narrows execution to the unit project. Integration fixtures and property iterations stay out of mutation runs.
+- Scope: `mutate: src/**/*.ts`, no carve-outs.
+- The break threshold sits at 100 for every source file. Don't lower it without a concrete reason and a follow-up task to restore it.
+- Module-level `export const` and re-export bindings can survive a static-import `expect(X).toBe(...)` assertion when the Vitest worker caches the module before Stryker sets the active mutant. Test them through a runtime path that re-reads the binding, a method call that returns the value, or a constructor that reads an option. Or force re-evaluation with `vi.resetModules()` plus `await import(...)`.
+- Stryker directive comments suppress mutant classes that don't belong under mutation testing. Write `// Stryker disable <MutatorName>` on the line before the source to suppress, and `// Stryker restore <MutatorName>` on the line before the source that resumes instrumentation. Scope them as narrowly as possible.
+- `pnpm test:mutation` runs the full pass. `reports/stryker-incremental.json` lets repeated runs reuse prior results, so later invocations finish in seconds.
+- `pnpm test:mutation:changed` scopes `--mutate` to `src/*.ts` changed against `origin/main`. Override the base with `STRYKER_BASE=origin/beta pnpm test:mutation:changed`. Use this during feature work for fast feedback on the files you just edited.
+- Pre-push doesn't run mutation testing. The `mutation.yml` CI workflow enforces the break threshold on every pull request and every `main` push. It caches the incremental report per ref with a fallback to `main`.
+
+[stryker]: https://stryker-mutator.io/
 
 ## Documentation linting
 
