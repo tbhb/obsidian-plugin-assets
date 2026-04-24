@@ -117,8 +117,21 @@ jobs:
           if-no-files-found: error
 
   test:
-    name: Test
-    runs-on: ubuntu-latest
+    name: Test (${{ matrix.platform }})
+    runs-on: ${{ matrix.runner }}
+    # Matrix the test suite across OSes so cross-platform path regressions,
+    # especially in the integration vault fixture, surface in CI rather than
+    # reaching a contributor's laptop.
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: linux-x64
+            runner: ubuntu-latest
+          - platform: darwin-arm64
+            runner: macos-14
+          - platform: win32-x64
+            runner: windows-latest
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
@@ -142,7 +155,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
         with:
-          name: coverage
+          name: coverage-${{ matrix.platform }}
           path: coverage/
           retention-days: 7
           if-no-files-found: ignore
