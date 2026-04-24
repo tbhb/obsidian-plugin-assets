@@ -133,7 +133,7 @@ Add new technical terms to `cspell-words.txt` and to `.vale/config/vocabularies/
 - husky hooks, installed automatically by `pnpm install`:
   - `pre-commit` runs `nano-staged` across the staged files
   - `commit-msg` runs commitlint
-  - `pre-push` runs `pnpm lint:all && pnpm typecheck && pnpm build && pnpm test:coverage && pnpm test:property && pnpm danger:local`
+  - `pre-push` runs `pnpm lint:all && pnpm typecheck && pnpm build && pnpm test:coverage && pnpm test:integration && pnpm test:property && pnpm danger:local`
 - Never use `--no-verify`. Fix the underlying failure.
 - Work on a feature branch, open a PR, and merge via squash.
 
