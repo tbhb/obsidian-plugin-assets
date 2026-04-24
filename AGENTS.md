@@ -141,7 +141,7 @@ Add new technical terms to `cspell-words.txt` and to `.vale/config/vocabularies/
 
 - release-please runs in single-branch mode on `main`. See `RELEASING.md` for the full guide.
 - Push conventional commits to `main`. release-please opens a release PR that bumps `package.json` and updates `CHANGELOG.md`. Merging creates a bare-semver tag and a GitHub release. A follow-up job builds, attests via SLSA provenance, and publishes to npm with `--provenance`.
-- Stable vs beta comes from the version string, not the branch. A regular `feat`/`fix` bumps under `bump-minor-pre-major` and publishes under `latest`. A `Release-As: x.y.z-beta.N` footer on any commit forces a prerelease; release-please flags the GitHub release as prerelease and the publish step passes `--tag beta` to `npm publish`.
+- Stable vs beta comes from the version string, not the branch. A regular `feat`/`fix` bumps under `bump-minor-pre-major` and publishes under `latest`. A `Release-As: x.y.z-beta.N` footer on any commit forces a prerelease. release-please's `prerelease` config option, once enabled, stays on for every release regardless of the version qualifier, so the `release.yml` workflow flips the GitHub prerelease flag itself. It edits the release to `prerelease=true` when the tag contains a semver qualifier and leaves stable tags unflagged. The publish step also passes `--tag beta` to `npm publish` for qualifier tags.
 - Only `feat:`, `fix:`, and commits with breaking changes trigger a release PR on their own. `chore:`, `docs:`, `refactor:`, `style:`, `test:`, `ci:`, and `build:` commits land without opening one, unless they carry a `Release-As:` footer.
 - Don't hand-edit `package.json` `version` or `CHANGELOG.md`. Don't create tags manually. release-please owns those files.
 
