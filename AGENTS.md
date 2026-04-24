@@ -9,14 +9,14 @@ Run these commands on a fresh clone:
 ```bash
 pnpm install          # install dependencies + init husky hooks
 pnpm typecheck        # tsc --noEmit on src + test
-pnpm test             # vitest, 100% coverage gate
+pnpm test             # vitest run, all three tiers
 pnpm build            # vite build, emits dist/ with rolled-up types
 ```
 
 Run the full gate before pushing:
 
 ```bash
-pnpm lint:all && pnpm typecheck && pnpm build && pnpm test:coverage
+pnpm lint:all && pnpm typecheck && pnpm build && pnpm test:coverage && pnpm test:integration && pnpm test:property
 ```
 
 The pre-commit hook runs `nano-staged`. The pre-push hook runs the full gate. Never bypass with `--no-verify`.
@@ -51,7 +51,7 @@ pnpm test:watch       # vitest in watch mode
 pnpm test:unit        # vitest run --project=unit
 pnpm test:integration # vitest run --project=integration
 pnpm test:property    # vitest run --project=property
-pnpm test:coverage    # vitest run --coverage, enforces 100% thresholds
+pnpm test:coverage    # vitest run --project=unit --coverage, enforces 100% thresholds
 pnpm test:mutation    # stryker run, full mutation pass with incremental reuse
 pnpm test:mutation:changed # stryker scoped to src diff vs STRYKER_BASE (default origin/main)
 pnpm typecheck        # tsc --noEmit on src + test
@@ -94,6 +94,7 @@ The library ships as an ECMAScript module, no CommonJS fallback. `vite build` em
 
 - Vitest 4 split into three projects by directory under `test/`. The `unit` and `integration` tiers run in `jsdom`. The `property` tier runs in `node`.
 - Coverage thresholds sit at 100% for statements, branches, functions, and lines. Don't lower them or add `/* v8 ignore */` comments without a clear rationale.
+- `pnpm test:coverage` runs the `unit` project only. The `integration` and `property` tiers run as separate CI steps and separate pre-push steps so fuzzed property iterations can't cover branches that deterministic unit cases miss, which would hide real coverage gaps.
 - Integration tests that need GitHub release fixtures should mock the network boundary (`msw` or `nock`) rather than hitting the real API.
 - Property tests use [fast-check][fast-check] via [`@fast-check/vitest`][fast-check-vitest], which exposes `test.prop` and `it.prop` helpers. The default seed policy stays in place. fast-check prints the seed on failure, so reproducing a counterexample takes a single rerun with the printed seed. Save new property suites under `test/property/` rather than the unit tier so coverage metrics stay tied to deterministic unit cases.
 

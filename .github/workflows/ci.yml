@@ -119,9 +119,9 @@ jobs:
   test:
     name: Test (${{ matrix.platform }})
     runs-on: ${{ matrix.runner }}
-    # Matrix the test suite across OSes so cross-platform path regressions,
-    # especially in the integration vault fixture, surface in CI rather than
-    # reaching a contributor's laptop.
+    # Matrix the test tiers across OSes so cross-platform path regressions
+    # in the integration vault fixture (and anything the property tier
+    # exercises) surface in CI rather than on a contributor's machine.
     strategy:
       fail-fast: false
       matrix:
@@ -148,8 +148,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run tests with coverage
+      - name: Run unit tests with coverage
         run: pnpm run test:coverage
+
+      - name: Run integration tests
+        run: pnpm run test:integration
+
+      - name: Run property tests
+        run: pnpm run test:property
 
       - name: Upload coverage report
         if: always()

@@ -6,11 +6,13 @@ const obsidianMockPath = fileURLToPath(new URL('./test/__mocks__/obsidian.ts', i
 export default defineConfig({
   test: {
     // Three tiers share the `obsidian` alias but split by directory.
-    // The `unit` project exercises source modules in isolation. The
-    // `integration` project drives the fixture plugin against a real
-    // on-disk vault fixture copied to a tmpdir per test. The `property`
-    // project runs fast-check properties over pure logic and doesn't
-    // need a DOM.
+    // The `unit` project exercises source modules with deterministic cases
+    // and owns the 100% coverage gate. The `integration` project drives
+    // the fixture plugin against a real on-disk vault fixture copied to a
+    // tmpdir per test. The `property` project runs fast-check properties
+    // over pure logic and stays out of coverage so fuzzed iterations can't
+    // game the threshold by covering branches that deterministic tests
+    // miss.
     projects: [
       {
         extends: true,
