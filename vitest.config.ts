@@ -5,10 +5,12 @@ const obsidianMockPath = fileURLToPath(new URL('./test/__mocks__/obsidian.ts', i
 
 export default defineConfig({
   test: {
-    // Two tiers share the `obsidian` alias but split by directory. The
-    // `unit` project exercises source modules in isolation. The
+    // Three tiers share the `obsidian` alias but split by directory.
+    // The `unit` project exercises source modules in isolation. The
     // `integration` project drives the fixture plugin against a real
-    // on-disk vault fixture copied to a tmpdir per test.
+    // on-disk vault fixture copied to a tmpdir per test. The `property`
+    // project runs fast-check properties over pure logic and doesn't
+    // need a DOM.
     projects: [
       {
         extends: true,
@@ -26,6 +28,14 @@ export default defineConfig({
           environment: 'jsdom',
           include: ['test/integration/**/*.test.ts'],
           setupFiles: ['test/integration/setup.ts'],
+        },
+      },
+      {
+        extends: true,
+        test: {
+          name: 'property',
+          environment: 'node',
+          include: ['test/property/**/*.test.ts'],
         },
       },
     ],
