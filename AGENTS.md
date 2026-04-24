@@ -63,6 +63,7 @@ pnpm vale:sync        # download vale style packages
 
 - Two-space indentation everywhere, enforced by Biome. Single quotes, semicolons, trailing commas, 100-char line width. See `biome.json`.
 - ESLint runs `typescript-eslint`'s type-aware rules over `src/**/*.ts` for checks Biome doesn't cover.
+- `eslint-plugin-sonarjs` contributes `sonarjs/cognitive-complexity` at the default threshold of 15. Prefer extracting helper functions over raising the threshold.
 - Strict TypeScript with ES2022 target, `noUncheckedIndexedAccess`, and `isolatedModules`.
 - Avoid default exports.
 

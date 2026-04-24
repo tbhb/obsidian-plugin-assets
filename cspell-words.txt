@@ -21,6 +21,7 @@ rumdl
 reviewdog
 shellcheck
 sigstore
+sonarjs
 SLSA
 tbhb
 tsbuildinfo
