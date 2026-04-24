@@ -34,3 +34,6 @@ coverage
 
 # os
 .DS_Store
+
+# scratch
+/tmp/
