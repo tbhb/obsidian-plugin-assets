@@ -5,7 +5,7 @@ import {
   CacheCorruptError,
   NetworkFetchError,
   PluginAssetsError,
-} from '../src/index.js';
+} from '../../src/index.js';
 
 describe('PluginAssetsError', () => {
   it('carries humanMessage and manualInstallUrl', () => {

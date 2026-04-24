@@ -1,0 +1,9 @@
+{
+  "id": "obsidian-plugin-assets-fixture",
+  "name": "Plugin Assets Fixture",
+  "version": "0.0.0",
+  "minAppVersion": "1.7.2",
+  "description": "Fixture plugin that exercises obsidian-plugin-assets in integration tests.",
+  "author": "tbhb",
+  "isDesktopOnly": false
+}
