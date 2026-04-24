@@ -43,8 +43,11 @@ Config lives at the repo root: `biome.json`, `eslint.config.mts`, `.dependency-c
 ```bash
 pnpm dev              # vite build --watch
 pnpm build            # vite build, emits dist/ with rolled-up types
-pnpm test             # vitest run
+pnpm test             # vitest run, all projects
 pnpm test:watch       # vitest in watch mode
+pnpm test:unit        # vitest run --project=unit
+pnpm test:integration # vitest run --project=integration
+pnpm test:property    # vitest run --project=property
 pnpm test:coverage    # vitest run --coverage, enforces 100% thresholds
 pnpm typecheck        # tsc --noEmit on src + test
 pnpm format           # biome format --write
@@ -69,7 +72,7 @@ pnpm vale:sync        # download vale style packages
 - ESLint runs on `src/**/*.ts` and `test/**/*.ts`, with `typescript-eslint`'s type-aware rules applied to both for checks Biome doesn't cover.
 - `eslint-plugin-sonarjs` contributes `sonarjs/cognitive-complexity` at the default threshold of 15. Prefer extracting helper functions over raising the threshold.
 - [dependency-cruiser][depcruise] guards the module graph via `.dependency-cruiser.cjs`. It forbids runtime circular dependencies, orphan modules, unresolvable imports, dev-dependency imports from `src/`, duplicate dependency-type declarations, and `src/` depending on `test/`. Cycles composed only of `import type` edges pass, since those edges vanish after tsc emits.
-- [Knip][knip] catches unused files, exports, and dependencies via `.knip.json`. Its Vite and Vitest plugins auto-discover entries from `vite.config.ts` and `vitest.config.ts`, so the config only declares the project glob plus a small `ignoreBinaries` list for external tools that npm scripts call: `actionlint`, `rumdl`, `vale`, and `yamllint`.
+- [Knip][knip] catches unused files, exports, and dependencies via `.knip.json`. Its Vite and Vitest plugins auto-discover entries from `vite.config.ts` and `vitest.config.ts`, so the config only declares the project glob plus a small `ignoreBinaries` list for external tools that npm scripts call: `actionlint`, `rumdl`, `vale`, and `yamllint`. `fast-check` sits in `ignoreDependencies` because property tests import `fc` through `@fast-check/vitest`, which declares `fast-check` as a peer dependency, so no file imports the package directly.
 - [jscpd][jscpd] fails the lint gate on any duplicate token block across `src/` and `test/`. Config lives at `.jscpd.json` with threshold 0, `minTokens: 50`, and `minLines: 5`. Prefer extracting helpers over raising the threshold.
 - Strict TypeScript with ES2022 target, `noUncheckedIndexedAccess`, and `isolatedModules`.
 - Avoid default exports.
@@ -84,9 +87,13 @@ The library ships as an ECMAScript module, no CommonJS fallback. `vite build` em
 
 ## Testing
 
-- Vitest 4 with the `node` environment.
+- Vitest 4 split into three projects by directory under `test/`. The `unit` and `integration` tiers run in `jsdom`. The `property` tier runs in `node`.
 - Coverage thresholds sit at 100% for statements, branches, functions, and lines. Don't lower them or add `/* v8 ignore */` comments without a clear rationale.
 - Integration tests that need GitHub release fixtures should mock the network boundary (`msw` or `nock`) rather than hitting the real API.
+- Property tests use [fast-check][fast-check] via [`@fast-check/vitest`][fast-check-vitest], which exposes `test.prop` and `it.prop` helpers. The default seed policy stays in place. fast-check prints the seed on failure, so reproducing a counterexample takes a single rerun with the printed seed. Save new property suites under `test/property/` rather than the unit tier so coverage metrics stay tied to deterministic unit cases.
+
+[fast-check]: https://fast-check.dev/
+[fast-check-vitest]: https://github.com/dubzzz/fast-check/tree/main/packages/vitest
 
 ## Documentation linting
 
@@ -106,7 +113,7 @@ Add new technical terms to `cspell-words.txt` and to `.vale/config/vocabularies/
 - husky hooks, installed automatically by `pnpm install`:
   - `pre-commit` runs `nano-staged` across the staged files
   - `commit-msg` runs commitlint
-  - `pre-push` runs `pnpm lint:all && pnpm typecheck && pnpm build && pnpm test:coverage`
+  - `pre-push` runs `pnpm lint:all && pnpm typecheck && pnpm build && pnpm test:coverage && pnpm test:property && pnpm danger:local`
 - Never use `--no-verify`. Fix the underlying failure.
 - Work on a feature branch, open a PR, and merge via squash.
 
