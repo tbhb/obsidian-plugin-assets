@@ -27,6 +27,8 @@
     "eslint.config.mts",
     "vite.config.ts",
     "vitest.config.ts",
-    ".commitlintrc.ts"
+    ".commitlintrc.ts",
+    "dangerfile.lite.ts",
+    "dangerfile.ts"
   ]
 }
