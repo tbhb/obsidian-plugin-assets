@@ -4,6 +4,7 @@ attestations
 autoupdate
 biomejs
 commitlint
+commitlintrc
 cooldown
 Cowork
 depcruise

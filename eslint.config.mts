@@ -15,7 +15,7 @@
  * eagerly at import time and library code under `src/` has no manifest.
  */
 
-import { globalIgnores } from 'eslint/config';
+import { defineConfig, globalIgnores } from 'eslint/config';
 import sonarjs from 'eslint-plugin-sonarjs';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
@@ -38,7 +38,7 @@ const typeAwareRules = {
   '@typescript-eslint/no-explicit-any': 'off',
 } as const;
 
-export default tseslint.config(
+export default defineConfig(
   {
     files: ['src/**/*.ts'],
     languageOptions: {
@@ -48,12 +48,7 @@ export default tseslint.config(
       },
       parserOptions: {
         projectService: {
-          allowDefaultProject: [
-            'eslint.config.mts',
-            'vite.config.ts',
-            'vitest.config.ts',
-            'commitlint.config.js',
-          ],
+          allowDefaultProject: ['manifest.json'],
         },
         tsconfigRootDir: import.meta.dirname,
       },
@@ -67,10 +62,9 @@ export default tseslint.config(
       ...typeAwareRules,
     },
   },
-  // Root-level config files. These aren't in tsconfig.json's `include`, so
-  // they fall through `allowDefaultProject` above. They run in Node.
+  // Root-level config files run in Node. All sit in tsconfig's `include`.
   {
-    files: ['vite.config.ts', 'vitest.config.ts', 'commitlint.config.js'],
+    files: ['vite.config.ts', 'vitest.config.ts', '.commitlintrc.ts'],
     languageOptions: {
       parser: tseslint.parser,
       globals: {
@@ -78,12 +72,7 @@ export default tseslint.config(
       },
       parserOptions: {
         projectService: {
-          allowDefaultProject: [
-            'eslint.config.mts',
-            'vite.config.ts',
-            'vitest.config.ts',
-            'commitlint.config.js',
-          ],
+          allowDefaultProject: ['manifest.json'],
         },
         tsconfigRootDir: import.meta.dirname,
       },

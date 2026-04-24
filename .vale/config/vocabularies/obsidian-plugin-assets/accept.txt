@@ -11,11 +11,13 @@ gzip
 gzipped
 CI
 commitlint
+commitlintrc
 Corepack
 cspell
 dev
 [Cc]onfigs?
 dependabot
+devDependency
 distro
 ESLint
 etag
