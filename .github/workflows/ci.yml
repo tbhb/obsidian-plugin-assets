@@ -71,8 +71,21 @@ jobs:
           fail_level: error
 
   build:
-    name: Build
-    runs-on: ubuntu-latest
+    name: Build (${{ matrix.platform }})
+    runs-on: ${{ matrix.runner }}
+    # Matrix the build across Linux, macOS, and Windows so cross-platform
+    # path handling and OS-specific typecheck or build regressions surface
+    # before a contributor hits them locally.
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: linux-x64
+            runner: ubuntu-latest
+          - platform: darwin-arm64
+            runner: macos-14
+          - platform: win32-x64
+            runner: windows-latest
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
@@ -98,7 +111,7 @@ jobs:
       - name: Upload build artifacts
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
         with:
-          name: library-build
+          name: library-build-${{ matrix.platform }}
           path: dist/
           retention-days: 7
           if-no-files-found: error
