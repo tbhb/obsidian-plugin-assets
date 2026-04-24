@@ -11,7 +11,7 @@ export default defineConfig({
       reportsDirectory: './coverage',
       include: ['src/**/*.ts'],
       exclude: ['src/**/*.d.ts', 'test/**', '**/__mocks__/**'],
-      // The scaffold ships at 100% across all metrics. Keep it that way —
+      // The scaffold ships at 100% across all metrics. Keep it that way:
       // any regression in branches/lines/functions/statements fails CI.
       thresholds: {
         perFile: true,
