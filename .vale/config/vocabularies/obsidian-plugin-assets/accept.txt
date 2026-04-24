@@ -14,10 +14,13 @@ commitlint
 commitlintrc
 Corepack
 cspell
+[Dd]anger
+[Dd]angerfile
 dev
 [Cc]onfigs?
 dependabot
 devDependency
+[Gg]lobals
 distro
 ESLint
 etag
