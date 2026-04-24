@@ -21,6 +21,7 @@ ESLint
 etag
 formatters
 gitignore[dr]?
+jscpd
 [Hh]usky
 [Kk]nip
 MIT

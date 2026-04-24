@@ -11,6 +11,7 @@ dependabot
 dependency-cruiser
 gitignored
 husky
+jscpd
 jsdom
 knip
 libnpmpublish

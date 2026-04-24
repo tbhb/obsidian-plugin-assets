@@ -36,7 +36,7 @@ test/
 └── dependabot.yml
 ```
 
-Config lives at the repo root: `biome.json`, `eslint.config.mts`, `.dependency-cruiser.cjs`, `.knip.json`, `cspell.json` + `cspell-words.txt`, `.rumdl.toml`, `.vale.ini` + `.vale/`, `.yamllint.yaml` + `.yamllintignore`, `commitlint.config.js`, `vite.config.ts`, `vitest.config.ts`, plus both `tsconfig.json` and `tsconfig.test.json`.
+Config lives at the repo root: `biome.json`, `eslint.config.mts`, `.dependency-cruiser.cjs`, `.jscpd.json`, `.knip.json`, `cspell.json` + `cspell-words.txt`, `.rumdl.toml`, `.vale.ini` + `.vale/`, `.yamllint.yaml` + `.yamllintignore`, `commitlint.config.js`, `vite.config.ts`, `vitest.config.ts`, plus both `tsconfig.json` and `tsconfig.test.json`.
 
 ## Commands reference
 
@@ -51,6 +51,7 @@ pnpm format           # biome format --write
 pnpm format:markdown  # rumdl fmt .
 pnpm lint             # biome lint + eslint
 pnpm lint:deps        # dependency-cruiser on src + test
+pnpm lint:jscpd       # jscpd copy-paste detection
 pnpm lint:knip        # knip — unused files, exports, deps
 pnpm lint:markdown    # rumdl check
 pnpm lint:prose       # vale
@@ -69,10 +70,12 @@ pnpm vale:sync        # download vale style packages
 - `eslint-plugin-sonarjs` contributes `sonarjs/cognitive-complexity` at the default threshold of 15. Prefer extracting helper functions over raising the threshold.
 - [dependency-cruiser][depcruise] guards the module graph via `.dependency-cruiser.cjs`. It forbids runtime circular dependencies, orphan modules, unresolvable imports, dev-dependency imports from `src/`, duplicate dependency-type declarations, and `src/` depending on `test/`. Cycles composed only of `import type` edges pass, since those edges vanish after tsc emits.
 - [Knip][knip] catches unused files, exports, and dependencies via `.knip.json`. Its Vite and Vitest plugins auto-discover entries from `vite.config.ts` and `vitest.config.ts`, so the config only declares the project glob plus a small `ignoreBinaries` list for external tools that npm scripts call: `actionlint`, `rumdl`, `vale`, and `yamllint`.
+- [jscpd][jscpd] fails the lint gate on any duplicate token block across `src/` and `test/`. Config lives at `.jscpd.json` with threshold 0, `minTokens: 50`, and `minLines: 5`. Prefer extracting helpers over raising the threshold.
 - Strict TypeScript with ES2022 target, `noUncheckedIndexedAccess`, and `isolatedModules`.
 - Avoid default exports.
 
 [depcruise]: https://github.com/sverweij/dependency-cruiser
+[jscpd]: https://github.com/kucherenko/jscpd
 [knip]: https://knip.dev/
 
 ## Build shape
